@@ -1,107 +1,64 @@
-# Walmart-Sales-Data-Analysis-with-SQL-Python
+# Walmart Sales Analysis — Python + SQL
 
-## Project Overview
+End-to-end analysis of **9,969 Walmart retail transactions** across **100 branches in 98 US cities (2019–2023)**. I cleaned the raw data in Python, loaded it into MySQL, and answered nine business questions with SQL.
 
-
-
-This project is an end-to-end data analysis solution designed to extract critical business insights from Walmart sales data. We utilize Python for data processing and analysis, SQL for advanced querying, and structured problem-solving techniques to solve key business questions. The project is ideal for data analysts looking to develop skills in data manipulation, SQL querying, and data pipeline creation.
+Part of my portfolio → **[bhbhavna.github.io](https://bhbhavna.github.io)**
 
 ---
 
-## Project Steps
+## Key findings
 
-### 1. Set Up the Environment
-   - **Tools Used**: Visual Studio Code (VS Code), Python, SQL (MySQ)
-   - **Goal**: Create a structured workspace within VS Code and organize project folders for smooth development and data handling.
+| # | Finding | Why it matters |
+|---|---------|----------------|
+| 1 | **Two categories earn ~81% of profit.** Fashion accessories ($192K) and Home & lifestyle ($192K) produce $385K of $476K total profit — yet they are the top-rated category in only **5 of 100** branches. | The profit engine is not where customers are happiest; improving satisfaction in these two categories protects most of the profit. |
+| 2 | **Digital payments dominate.** Credit card (43%) and e-wallet (39%) make up 82% of transactions; e-wallet is the most-used method in **75 of 100** branches, cash in only 2. | Payment-processing costs and e-wallet partnerships matter more than cash handling. |
+| 3 | **Afternoons are peak.** 47% of invoices fall between 12:00 and 17:59; mornings carry only 21%. | Shift staffing can follow the afternoon peak. |
+| 4 | **Growth is uneven.** Total revenue rose 6.8% from 2022 to 2023 ($217K → $232K), but **42 of 100 branches declined** — the worst five (WALM045, WALM047, WALM098, WALM033, WALM081) fell 51–63%. | Company-level growth hides a large group of under-performing branches worth a closer review. |
 
-### 2. Set Up Kaggle API
-   - **API Setup**: Obtain your Kaggle API token from [Kaggle](https://www.kaggle.com/) by navigating to your profile settings and downloading the JSON file.
-   - **Configure Kaggle**: 
-      - Place the downloaded `kaggle.json` file in your local `.kaggle` folder.
-      - Use the command `kaggle datasets download -d <dataset-path>` to pull datasets directly into your project.
-
-### 3. Download Walmart Sales Data
-   - **Data Source**: Use the Kaggle API to download the Walmart sales datasets from Kaggle.
-   - **Dataset Link**: [Walmart Sales Dataset](https://www.kaggle.com/najir0123/walmart-10k-sales-datasets)
-   - **Storage**: Save the data in the `data/` folder for easy reference and access.
-
-### 4. Install Required Libraries and Load Data
-   - **Libraries**: Install necessary Python libraries using:
-     ```bash
-     pip install pandas numpy sqlalchemy mysql-connector-python 
-     ```
-   - **Loading Data**: Read the data into a Pandas DataFrame for initial analysis and transformations.
-
-### 5. Explore the Data
-   - **Goal**: Conduct an initial data exploration to understand data distribution, check column names, types, and identify potential issues.
-   - **Analysis**: Use functions like `.info()`, `.describe()`, and `.head()` to get a quick overview of the data structure and statistics.
-
-### 6. Data Cleaning
-   - **Remove Duplicates**: Identify and remove duplicate entries to avoid skewed results.
-   - **Handle Missing Values**: Drop rows or columns with missing values if they are insignificant; fill values where essential.
-   - **Fix Data Types**: Ensure all columns have consistent data types (e.g., dates as `datetime`, prices as `float`).
-   - **Currency Formatting**: Use `.replace()` to handle and format currency values for analysis.
-   - **Validation**: Check for any remaining inconsistencies and verify the cleaned data.
-
-### 7. Feature Engineering
-   - **Create New Columns**: Calculate the `Total Amount` for each transaction by multiplying `unit_price` by `quantity` and adding this as a new column.
-   - **Enhance Dataset**: Adding this calculated field will streamline further SQL analysis and aggregation tasks.
-
-### 8. Load Data into MySQL
-   - **Set Up Connections**: Connect to MySQL  using `sqlalchemy` and load the cleaned data into each database.
-   - **Table Creation**: Set up tables in both MySQL using Python SQLAlchemy to automate table creation and data insertion.
-   - **Verification**: Run initial SQL queries to confirm that the data has been loaded accurately.
-
-### 9. SQL Analysis: Complex Queries and Business Problem Solving
-   - **Business Problem-Solving**: Write and execute complex SQL queries to answer critical business questions, such as:
-     - Revenue trends across branches and categories.
-     - Identifying best-selling product categories.
-     - Sales performance by time, city, and payment method.
-     - Analyzing peak sales periods and customer buying patterns.
-     - Profit margin analysis by branch and category.
-   - **Documentation**: Keep clear notes of each query's objective, approach, and results.
-
-### 10. Project Publishing and Documentation
-   - **Documentation**: Maintain well-structured documentation of the entire process in Markdown or a Jupyter Notebook.
-   - **Project Publishing**: Publish the completed project on GitHub or any other version control platform, including:
-     - The `README.md` file (this document).
-     - Jupyter Notebooks (if applicable).
-     - SQL query scripts.
-     - Data files (if possible) or steps to access them.
+*Figures are the results of the queries in [`MY SQL.sql`](MY%20SQL.sql), run on [`walmart_clean_data.csv`](walmart_clean_data.csv). Profit = unit price × quantity × profit margin.*
 
 ---
 
-## Requirements
+## Approach
 
-- **Python 3.8+**
-- **SQL Databases**: MySQL
-- **Python Libraries**:
-  - `pandas`, `numpy`, `sqlalchemy`, `mysql-connector-python
-- **Kaggle API Key** (for data downloading)
+1. **Data** — [Walmart 10K sales dataset](https://www.kaggle.com/najir0123/walmart-10k-sales-datasets) from Kaggle.
+2. **Cleaning (pandas)** — removed duplicates and rows with missing values, stripped `$` from `unit_price` and converted it to a number, added `total = unit_price × quantity`, and standardised column names. Output: `walmart_clean_data.csv`.
+3. **Loading** — wrote the cleaned data to MySQL with SQLAlchemy + PyMySQL.
+4. **Analysis (MySQL 8)** — CTEs, `RANK() OVER (PARTITION BY …)` window functions, `CASE` time-of-day buckets and date parsing with `STR_TO_DATE`.
 
+## Business questions answered
 
-## Project Structure
+1. Transactions and quantity sold by payment method
+2. Highest-rated category in each branch
+3. Busiest day of the week for each branch
+4. Total quantity sold per payment method
+5. Min / max / average rating by category and city
+6. Total profit by category
+7. Most common payment method per branch
+8. Sales by shift (morning / afternoon / evening)
+9. The five branches with the largest revenue decline, 2022 → 2023
 
-```plaintext
-|-- data/                     # Raw data and transformed data
-|-- sql_queries/              # SQL scripts for analysis and queries
-|-- notebooks/                # Jupyter notebooks for Python analysis
-|-- README.md                 # Project documentation
-|-- requirements.txt          # List of required Python libraries
-|-- main.py                   # Main script for loading, cleaning, and processing data
+## Files
+
+| File | What it is |
+|------|------------|
+| `project.ipynb` | Data exploration, cleaning and loading into MySQL |
+| `MY SQL.sql` | All nine business queries |
+| `walmart_clean_data.csv` | Cleaned dataset (9,969 rows) |
+| `Walmart.csv`, `walmart-10k-sales-datasets.zip` | Raw data |
+| `Requirements.txt` | Python dependencies |
+
+## Run it yourself
+
+```bash
+pip install -r Requirements.txt
+# set your local MySQL password as an environment variable (never hard-code it)
+set MYSQL_PASSWORD=your_password        # Windows
+export MYSQL_PASSWORD=your_password     # macOS / Linux
 ```
----
 
-## Results and Insights
-
-This section will include your analysis findings:
-- **Sales Insights**: Key categories, branches with highest sales, and preferred payment methods.
-- **Profitability**: Insights into the most profitable product categories and locations.
-- **Customer Behavior**: Trends in ratings, payment preferences, and peak shopping hours.
-
-## Acknowledgments
-
-- **Data Source**: Kaggle’s Walmart Sales Dataset
-- **Inspiration**: Walmart’s business case studies on sales and supply chain optimization.
+Open `project.ipynb` and run all cells to load the data into a `walmart_db` database, then run the queries in `MY SQL.sql`.
 
 ---
+
+**Tools:** Python (pandas, SQLAlchemy, PyMySQL) · MySQL 8 · Jupyter · VS Code
